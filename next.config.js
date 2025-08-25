@@ -1,14 +1,23 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  env: {
-    HUGGINGFACE_API_KEY: process.env.HUGGINGFACE_API_KEY,
-    HF_MODEL: process.env.HF_MODEL || "tiiuae/falcon-7b-instruct"
+{
+  "name": "ai-teacher-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  experimental: {
-    appDir: false
+  "dependencies": {
+    "next": "13.5.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "file-saver": "^2.0.5",
+    "html-to-docx": "^6.4.0",
+    "jspdf": "^2.5.1"
+  },
+  "devDependencies": {
+    "eslint": "8.44.0",
+    "eslint-config-next": "13.5.1"
   }
-};
-
-module.exports = nextConfig;
+}
