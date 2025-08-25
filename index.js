@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { saveAs } from "file-saver";
-import htmlToDocx from "html-to-docx";
+import htmlToDocx from "@turbodocx/html-to-docx";
 import jsPDF from "jspdf";
 
 const UI = {
@@ -208,4 +208,21 @@ export default function Home() {
         <div>
           <label>{T.topic}</label>
           <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)}
-            placeholder={uiLang === "ar" ? "اختياري: الدوال/المعادلات..." :
+            placeholder={uiLang === "ar" ? "اختياري: الدوال/المعادلات..." : uiLang === "fr" ? "Optionnel: Fonctions/Equations..." : "Optional: Functions/Equations..."}
+            style={{ width: "100%", padding: 8 }}
+          />
+        </div>
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <button onClick={onGenerate} disabled={loading} style={{ padding: 8, marginRight: 8 }}>{loading ? "جاري التوليد..." : T.generate}</button>
+        <button onClick={exportPDF} style={{ padding: 8, marginRight: 8 }}>{T.exportPDF}</button>
+        <button onClick={exportWord} style={{ padding: 8 }}>{T.exportWord}</button>
+      </div>
+
+      <div ref={outputRef} style={{ marginTop: 16, padding: 12, border: "1px solid #ccc", minHeight: 200, whiteSpace: "pre-wrap" }}>
+        {content || T.placeholder}
+      </div>
+    </div>
+  );
+}
