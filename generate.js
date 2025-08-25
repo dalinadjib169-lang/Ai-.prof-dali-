@@ -1,16 +1,10 @@
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const {
-    cycle,     // الطور: ابتدائي/متوسط/ثانوي
-    subject,   // المادة
-    level,     // المستوى/السنة
-    docType,   // memo | assessment | exam
-    lang,      // ar | fr | en
-    topic,     // موضوع الدرس (اختياري)
-  } = req.body || {};
+  const { cycle, subject, level, docType, lang, topic } = req.body || {};
 
   if (!cycle || !subject || !level || !docType || !lang) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -82,14 +76,7 @@ Adapter le contenu au cycle et niveau ci-dessus.`,
 Adapt content to the given cycle and level.`
   }[lang];
 
-  const prompt =
-`${localeBlock}
-
-${metaLine}
-
-${structure}
-
-تنسيق الإخراج/Output format:
+  const prompt = `${localeBlock}\n\n${metaLine}\n\n${structure}\n\nتنسيق الإخراج/Output format:
 - استخدم عناوين فرعية واضحة.
 - استخدم ترقيم ونقاط.
 - لا تضف زخرفة أو رموز غير ضرورية.
@@ -104,11 +91,7 @@ ${structure}
       },
       body: JSON.stringify({
         inputs: prompt,
-        parameters: {
-          max_new_tokens: 600,
-          temperature: 0.6,
-          return_full_text: false
-        }
+        parameters: { max_new_tokens: 600, temperature: 0.6, return_full_text: false }
       })
     });
 
@@ -118,17 +101,12 @@ ${structure}
     }
 
     const data = await hfRes.json();
-
     let generated = "";
-    if (Array.isArray(data) && data[0]?.generated_text) {
-      generated = data[0].generated_text;
-    } else if (data?.generated_text) {
-      generated = data.generated_text;
-    } else if (typeof data === "string") {
-      generated = data;
-    } else {
-      generated = JSON.stringify(data);
-    }
+
+    if (Array.isArray(data) && data[0]?.generated_text) generated = data[0].generated_text;
+    else if (data?.generated_text) generated = data.generated_text;
+    else if (typeof data === "string") generated = data;
+    else generated = JSON.stringify(data);
 
     generated = generated.replace(/\n{3,}/g, "\n\n").trim();
 
