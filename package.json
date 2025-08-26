@@ -1,24 +1,32 @@
-{
-  "name": "ai-teacher-assistant",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "next": "13.5.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "file-saver": "^2.0.5",
-    "@turbodocx/html-to-docx": "^1.13.5",
-    "jspdf": "^2.5.1",
-    "axios": "^1.6.0"
-  },
-  "devDependencies": {
-    "eslint": "8.44.0",
-    "eslint-config-next": "13.5.1"
+import { OpenAI } from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // تأكد من وضع مفتاحك هنا في Vercel Environment Variables
+});
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Only POST requests are allowed" });
+  }
+
+  const { cycle, subject, level, docType, lang, topic } = req.body;
+
+  if (!cycle || !subject || !level || !docType || !lang) {
+    return res.status(400).json({ error: "جميع الحقول المطلوبة يجب ملؤها" });
+  }
+
+  try {
+    const prompt = `أنت معلم. أنشئ ${docType} لمادة ${subject} للطور ${cycle}، المستوى ${level}, اللغة ${lang}${topic ? ", الموضوع: " + topic : ""}.`;
+    
+    const response = await client.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const content = response.choices[0].message.content;
+    res.status(200).json({ content });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "حدث خطأ أثناء إنشاء المستند" });
   }
 }
