@@ -2,8 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    appDir: false,
+  i18n: {
+    locales: ["ar", "fr", "en"],
+    defaultLocale: "ar",
   },
 };
 
